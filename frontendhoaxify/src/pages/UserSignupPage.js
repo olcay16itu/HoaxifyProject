@@ -1,5 +1,5 @@
 import React from "react";
-import {signup,ChangeLanguage} from "../api/apiCalls"
+import {signup} from "../api/apiCalls"
 import Input from '../components/Input'
 import {withTranslation} from "react-i18next";
 
@@ -59,11 +59,7 @@ class UserSignupPage extends React.Component {
     this.setState({wait: false})
 
   }
-  onChangeLanguage= language =>{
-    const {i18n} = this.props;
-    i18n.changeLanguage(language)
-    ChangeLanguage(language)
-  }
+
 
   render() {
     const {wait, errors} = this.state
@@ -109,10 +105,6 @@ class UserSignupPage extends React.Component {
                             aria-hidden="true"></span>
             }{t('Sign Up')}
             </button>
-          </div>
-          <div>
-            <img src="https://flagsapi.com/TR/flat/24.png" alt="Turkish Flag" onClick={()=>this.onChangeLanguage("tr")} style={{cursor:"pointer"}}></img>
-            <img src="https://flagsapi.com/US/flat/24.png" alt="USA Flag" onClick={()=>this.onChangeLanguage("en")} style={{cursor:"pointer"}}></img>
           </div>
         </form>
       </div>

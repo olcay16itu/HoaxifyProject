@@ -28,37 +28,14 @@ public class UserController {
     public UserController(UserService userService){
         this.userService=userService;
     }
-
-
     @PostMapping("/api/1.0/users")
     @ResponseStatus(HttpStatus.CREATED)
     public GenericResponse createUser(@Valid @RequestBody User user){
-        /*ApiError apiError= new ApiError(400,"Validation error","/api/1.0/users");
-        Map<String,String> validationErrors=new HashMap<>();
-        String username=user.getUsername();
-        String displayname=user.getDisplayname();
-        if(bindingResult.hasErrors()){
-           return ResponseEntity.badRequest().body(bindingResult.getAllErrors().stream());
-        }
-        if(username==null||username.isEmpty()){
-            validationErrors.put("username","Username cannot be null.");
-        }
-        if(displayname==null||displayname.isEmpty()){
-            validationErrors.put("displayname","displayname cannot be null.");
-        }
-        if(!validationErrors.isEmpty()){
-            apiError.setValidationErrors(validationErrors);
-            return ResponseEntity.badRequest().body(apiError);
-        }
-        userService.addUser(user);
-        return ResponseEntity.ok(new GenericResponse("User created")) ;
-
-         */
         userService.addUser(user);
         return new GenericResponse("User created");
     }
     //MethodArgumentNotValidException tipinde bir hatayı yakalıyor ve bad request dönüp ApiError olarak oluşturduğum nesneye mapleyip ApiError dönüyor.
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    /*@ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(MethodArgumentNotValidException methodArgumentNotValidException){
         ApiError apiError= new ApiError(400,"Validation error","/api/1.0/users");
@@ -68,5 +45,7 @@ public class UserController {
         }
         apiError.setValidationErrors(validationErrors);
         return apiError;
+
     }
+     */
 }
