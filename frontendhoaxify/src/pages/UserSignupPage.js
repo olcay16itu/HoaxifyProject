@@ -2,6 +2,8 @@ import React from "react";
 import {signup} from "../api/apiCalls"
 import Input from '../components/Input'
 import {withTranslation} from "react-i18next";
+import ButtonWithProgress from "../components/ButtonWithProgress";
+import {withApiProgress} from "../shared/ApiProgress";
 
 
 
@@ -12,7 +14,6 @@ class UserSignupPage extends React.Component {
     displayname: null,
     password: null,
     passwordRepeat: null,
-    wait: false,
     errors: {}
   };
 
@@ -34,7 +35,6 @@ class UserSignupPage extends React.Component {
 
   onClickSignUp = async (event) => {
     event.preventDefault()
-    this.setState({wait: true})
     const {username, displayname, password} = this.state
     const body = {
       username: username,
@@ -56,15 +56,14 @@ class UserSignupPage extends React.Component {
       }
 
     }
-    this.setState({wait: false})
 
   }
 
 
   render() {
-    const {wait, errors} = this.state
+    const {errors} = this.state
     const {username, displayname, password, passwordRepeat} = errors;
-    const {t} = this.props;
+    const {t,wait} = this.props;
     return (
       <div className="container">
         <form>
@@ -99,12 +98,8 @@ class UserSignupPage extends React.Component {
            <input className="form-control" name="repassword" type="password" onChange={this.onChangeEvent}></input>
          </div> */}
           <div className="text-center">
-            <button disabled={wait || passwordRepeat !== undefined} className="btn btn-primary mb-3"
-                    onClick={this.onClickSignUp}>{
-              wait && <span disabled={wait} className="spinner-border spinner-border-sm" role="status"
-                            aria-hidden="true"></span>
-            }{t('Sign Up')}
-            </button>
+            <ButtonWithProgress disabled = {wait || passwordRepeat !== undefined} wait={wait} text={t('Sign Up')}
+            onClick={this.onClickSignUp}></ButtonWithProgress>
           </div>
         </form>
       </div>
@@ -112,4 +107,5 @@ class UserSignupPage extends React.Component {
   }
 }
 const UserSignUpPageWithTranslation = withTranslation()(UserSignupPage)
-export default UserSignUpPageWithTranslation;
+const UserSignUpPageWithApiProgress=withApiProgress(UserSignUpPageWithTranslation,"api/1.0/users")
+export default UserSignUpPageWithApiProgress;

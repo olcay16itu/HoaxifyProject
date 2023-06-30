@@ -7,15 +7,16 @@ import './bootstrap-override.scss'
 import {i18n} from './i18';
 import UserLoginPage from "./pages/UserLoginPage";
 import LanguageSelector from "./components/LanguageSelector";
+import apiProgress from "./shared/ApiProgress";
+import ApiProgress from "./shared/ApiProgress";
+import App from "./container/App"
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <div>
-    <UserLoginPage ></UserLoginPage>
-    <LanguageSelector></LanguageSelector>
+      <App></App>
     </div>
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
