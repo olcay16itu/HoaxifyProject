@@ -10,13 +10,16 @@ import LanguageSelector from "./components/LanguageSelector";
 import apiProgress from "./shared/ApiProgress";
 import ApiProgress from "./shared/ApiProgress";
 import App from "./container/App"
+import AuthenticationContext from "./shared/AuthenticationContext";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  <AuthenticationContext>
     <div>
       <App></App>
     </div>
+  </AuthenticationContext>
 );
 
 // If you want to start measuring performance in your app, pass a function

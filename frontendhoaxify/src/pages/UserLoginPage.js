@@ -6,10 +6,10 @@ import {login} from "../api/apiCalls";
 import ButtonWithProgress from "../components/ButtonWithProgress";
 import {withApiProgress} from "../shared/ApiProgress";
 import {Navigate} from "react-router-dom";
-
+import {Authentication} from "../shared/AuthenticationContext";
 
 class UserLoginPage extends React.Component {
-
+  static contextType=Authentication;
   state = {
     username: null,
     password: null,
@@ -19,25 +19,28 @@ class UserLoginPage extends React.Component {
 
   onClickLogin = async event => {
     event.preventDefault();
-    this.setState({error: null})
-
     const {username, password} = this.state
-    const{onLoginSuccess}=this.props
+    const{onLoginSuccess}=this.context
     const creds = {
       username: username,
       password: password
     }
+    this.setState({error: null})
     try {
-      this.setState({error: null})
-      await login(creds)
-      await onLoginSuccess(username)
+      const response = await login(creds)
+      const authState={
+        username:response.data.username,
+        password:password,
+        displayName:response.data.displayName,
+        image:response.data.image
+      }
+
+      onLoginSuccess(authState)
     } catch (error) {
       this.setState({error: error.response.data.message})
     }
 
   }
-
-
 
   onChangeEvent = event => {
     const {name, value} = event.target;
@@ -53,8 +56,9 @@ class UserLoginPage extends React.Component {
   }
 
   render() {
-    const {t,wait,isLoggedin} = this.props;
+    const {t,wait} = this.props;
     const {error, username, password} = this.state
+    const {isLoggedin}=this.context
     return (
       <div className="container">
         <form>

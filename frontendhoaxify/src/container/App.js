@@ -4,44 +4,27 @@ import UserSignupPage from "../pages/UserSignupPage";
 import LanguageSelector from "../components/LanguageSelector";
 import UserLoginPage from "../pages/UserLoginPage";
 import HomePage from "../pages/HomePage";
-import UserPage from "../pages/UserPage";
 import {HashRouter as Router, Navigate, Route, Routes} from "react-router-dom";
-import userPage from "../pages/UserPage";
 import TopBar from "../components/TopBar";
+import {Authentication} from "../shared/AuthenticationContext";
+import userPage from "../pages/UserPage";
+
 
 class App extends React.Component {
-  state={
-    username:null,
-    isLoggedin: false
-  }
-
-  onLoginSuccess= async (username)=> {
-    this.setState({
-      username,
-      isLoggedin: true
-    })
-  }
-    onLogoutSuccess= ()=>{
-      this.setState({
-        username:null,
-        isLoggedin:false
-      })
-  }
+  static contextType=Authentication
   render() {
-    const{username,isLoggedin} = this.state
+    //const{username,isLoggedin} = this.state
+    const{isLoggedin}=this.context.state
     return (
       <div>
         <Router>
-          <TopBar username={username} isLoggedin={isLoggedin} onLogoutSuccess={this.onLogoutSuccess}></TopBar>
+          <TopBar/>
           <Routes>
             <Route path="/" Component={HomePage}/>
             {!isLoggedin&&
-            <Route path="/login" Component={()=> {
-              return <UserLoginPage onLoginSuccess={this.onLoginSuccess} isLoggedin={isLoggedin}/>
-            }}/>
-            }
+            <Route path="/login" Component={UserLoginPage}/>}
             <Route path="/signup" Component={UserSignupPage}/>
-            <Route path="/user/:username" Component={(props)=>{return <UserPage {...props} username={username}/>}}/>
+            <Route path="/user/:username" Component={userPage}/>
             <Route path='*' element={<Navigate to="/" replace={true}/>}/>
           </Routes>
         </Router>
