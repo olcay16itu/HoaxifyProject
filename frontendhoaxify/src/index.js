@@ -1,25 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import UserSignupPage from './pages/UserSignupPage';
 import reportWebVitals from './reportWebVitals';
 import './bootstrap-override.scss'
 import {i18n} from './i18';
-import UserLoginPage from "./pages/UserLoginPage";
-import LanguageSelector from "./components/LanguageSelector";
-import apiProgress from "./shared/ApiProgress";
-import ApiProgress from "./shared/ApiProgress";
 import App from "./container/App"
-import AuthenticationContext from "./shared/AuthenticationContext";
+import {Provider} from "react-redux";
+import configureStore from "./redux/configureStore";
 
+const store=configureStore();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+
 root.render(
-  <AuthenticationContext>
+  <Provider store={store}>
     <div>
       <App></App>
     </div>
-  </AuthenticationContext>
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

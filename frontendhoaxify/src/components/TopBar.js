@@ -1,18 +1,19 @@
-import React, {Component} from 'react';
+import React from 'react';
 import logo from '../assets/hoaxify.png'
 import {Link} from "react-router-dom";
 import {withTranslation} from "react-i18next";
-import {Authentication} from "../shared/AuthenticationContext";
+import {connect} from "react-redux";
+import {LogoutSuccess} from "../redux/authActions";
 
-class TopBar extends Component {
-  static contextType=Authentication;
+const TopBar =(props)=> {
+  //static contextType=Authentication;
   //Normalde Authentication.Provider ile sarılabilir ancak okunulurabilite artırılması için class componentlarda
   //üstteki gibi kullanılabilir.Burda mantık component property olarak function alıyor ve o functionı çağırırken
   // authenticationdan aldıgı valueyi function içerisinde kullanıp render ediyor.Bu sayede state drill gerek kalmıyor.
-  render() {
-    const {t} = this.props
-    const {state, onLogoutSuccess} = this.context
-    const {isLoggedin, username} = state
+  //onClickLogout=()=>{
+  //  this.props.dispatch(LogoutSuccess())
+  //}
+    const {t,isLoggedin,username,onLogoutSuccess} = props
     let links = <ul className="navbar-nav ms-auto">
       <li><Link className="nav-link" to="/login">{t("Login")}</Link></li>
       <li><Link className="nav-link" to="/signup">{t("Sign Up")}</Link></li>
@@ -34,8 +35,20 @@ class TopBar extends Component {
         </nav>
       </div>
     );
-  }
 }
 
 const TranslatedtopBar = withTranslation()(TopBar);
-export default TranslatedtopBar;
+const MapStateToProps=(store)=>{
+  return{
+    isLoggedin:store.isLoggedin,
+    username:store.username
+  }
+}
+const MapDispatchToProps=(dispatch)=>{
+  return{
+    onLogoutSuccess:()=>{
+      return dispatch(LogoutSuccess())
+    }
+  }
+}
+export default connect(MapStateToProps,MapDispatchToProps)(TranslatedtopBar);

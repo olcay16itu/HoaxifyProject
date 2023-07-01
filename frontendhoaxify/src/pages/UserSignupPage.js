@@ -1,111 +1,92 @@
-import React from "react";
-import {signup} from "../api/apiCalls"
+import React, { useState} from "react";
 import Input from '../components/Input'
 import {withTranslation} from "react-i18next";
 import ButtonWithProgress from "../components/ButtonWithProgress";
 import {withApiProgress} from "../shared/ApiProgress";
+import {signUpHandler} from "../redux/authActions";
+import {connect} from "react-redux";
+import {Navigate} from "react-router-dom";
 
 
+const UserSignupPage = (props) => {
 
-class UserSignupPage extends React.Component {
-
-  state = {
+  //state = {
+  //  username: null,
+  //  displayname: null,
+  //  password: null,
+  //  passwordRepeat: null,
+  //  errors: {}
+  //};
+  const [form, setForm] = useState({
     username: null,
     displayname: null,
     password: null,
     passwordRepeat: null,
-    errors: {}
-  };
+  });
+  const [errors, setErrors] = useState({});
 
-  onChangeEvent = event => {
+  const onChangeEvent = event => {
     const {name, value} = event.target;
-    const errors = {...this.state.errors}
-    errors[name] = undefined
-    if (name === 'password' || name === 'passwordRepeat') {
-      if (name === 'password' && value !== this.state.passwordRepeat) {
-        errors.passwordRepeat = this.props.t('Password mismatch')
-      } else if (name === 'passwordRepeat' && value !== this.state.password) {
-        errors.passwordRepeat = this.props.t('Password mismatch')
-      } else {
-        errors.passwordRepeat = undefined;
-      }
-    }
-    this.setState({[name]: value, errors})
+    setErrors((previousErrors) => ({...previousErrors, [name]: undefined}));
+    setForm((previousForm) => ({...previousForm, [name]: value}));
   }
-
-  onClickSignUp = async (event) => {
+  const onClickSignUp = async (event) => {
     event.preventDefault()
-    const {username, displayname, password} = this.state
+    const {dispatch} = props
+    const {username, displayname, password} = form
     const body = {
       username: username,
       displayname: displayname,
       password: password
     }
-    /*   signup(body)
-      .then((response)=>{
-        this.setState({wait:false})
-      }).catch(((error)=>{
-        this.setState({wait:false})
-      })); */
     try {
-      const response = await signup(body)
-    } catch (error) {
-      console.log(error)
-      if (error.response.data.validationErrors) {
-        this.setState({errors: error.response.data.validationErrors})
-      }
+      await dispatch(signUpHandler(body))
 
+    } catch (error) {
+      if (error.response.data.validationErrors) {
+        //this.setState({errors: error.response.data.validationErrors})
+        setErrors(error.response.data.validationErrors)
+      }
     }
 
   }
 
+  const {username: usernameError, displayname: displaynameError, password: passwordError} = errors;
+  const {t, wait, isLoggedin} = props;
 
-  render() {
-    const {errors} = this.state
-    const {username, displayname, password, passwordRepeat} = errors;
-    const {t,wait} = this.props;
+  let passwordRepeatError;
+  if (form.password !== form.passwordRepeat) {
+    passwordRepeatError = t('Password mismatch');
+  }
     return (
       <div className="container">
+        {isLoggedin && <Navigate to={"/"}/>}
         <form>
           <h1 className="text-center"> {t('Sign Up')}</h1>
-          <Input label={t("Username")} name="username" onChange={this.onChangeEvent} error={username}></Input>
-          <Input label={t("Display Name")} name="displayname" onChange={this.onChangeEvent} error={displayname}></Input>
-          <Input label={t("Password")} name="password" onChange={this.onChangeEvent} error={password}
+          <Input label={t("Username")} name="username" onChange={onChangeEvent}
+                 error={usernameError}></Input>
+          <Input label={t("Display Name")} name="displayname" onChange={onChangeEvent} error={displaynameError}></Input>
+          <Input label={t("Password")} name="password" onChange={onChangeEvent} error={passwordError}
                  type="password"></Input>
-          <Input label={t("Password Repeat")} name="passwordRepeat" onChange={this.onChangeEvent} error={passwordRepeat}
+          <Input label={t("Password Repeat")} name="passwordRepeat" onChange={onChangeEvent} error={passwordRepeatError}
                  type="password"></Input>
-          {/*<div className="mb-3">
-           <label>Password</label>
-           <input className="form-control" name="password" type="password" onChange={this.onChangeEvent}></input>    
-       </div>*/}
-          {/*<div className="mb-3">
-           <label>Re-Password</label>
-           <input className="form-control" name="repassword" type="password" onChange={this.onChangeEvent}></input>
-      </div>*/}
-          {/* <div className="mb-3">
-          <label>DisplayName</label>
-          <input className="form-control" name="displayname" onChange={this.onChangeEvent}></input>
-          <div className="invalid-feedback">
-            {displayname}
-          </div>
-         </div>
-         <div className="mb-3">
-           <label>Password</label>
-           <input className="form-control" name="password" type="password" onChange={this.onChangeEvent}></input>    
-         </div>
-         <div className="mb-3">
-           <label>Re-Password</label>
-           <input className="form-control" name="repassword" type="password" onChange={this.onChangeEvent}></input>
-         </div> */}
           <div className="text-center">
-            <ButtonWithProgress disabled = {wait || passwordRepeat !== undefined} wait={wait} text={t('Sign Up')}
-            onClick={this.onClickSignUp}></ButtonWithProgress>
+            <ButtonWithProgress disabled={wait || passwordRepeatError !== undefined} wait={wait} text={t('Sign Up')}
+                                onClick={onClickSignUp}></ButtonWithProgress>
           </div>
         </form>
       </div>
     )
   }
+
+
+
+const mapStateToProps = (store) => {
+  return {
+    isLoggedin: store.isLoggedin
+  }
 }
 const UserSignUpPageWithTranslation = withTranslation()(UserSignupPage)
-const UserSignUpPageWithApiProgress=withApiProgress(UserSignUpPageWithTranslation,"api/1.0/users")
-export default UserSignUpPageWithApiProgress;
+const UserSignUpPageWithApiProgressForSignUpRequest = withApiProgress(UserSignUpPageWithTranslation, "api/1.0/users")
+const UserSignUpPageWithTranslationForLoginRequest = withApiProgress(UserSignUpPageWithApiProgressForSignUpRequest, "api/1.0/auth")
+export default connect(mapStateToProps)(UserSignUpPageWithTranslationForLoginRequest);

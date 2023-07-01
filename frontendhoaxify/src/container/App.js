@@ -6,15 +6,15 @@ import UserLoginPage from "../pages/UserLoginPage";
 import HomePage from "../pages/HomePage";
 import {HashRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import TopBar from "../components/TopBar";
-import {Authentication} from "../shared/AuthenticationContext";
+import {connect} from "react-redux";
 import userPage from "../pages/UserPage";
 
 
 class App extends React.Component {
-  static contextType=Authentication
+  //static contextType=Authentication
   render() {
     //const{username,isLoggedin} = this.state
-    const{isLoggedin}=this.context.state
+    const{isLoggedin}=this.props
     return (
       <div>
         <Router>
@@ -34,4 +34,9 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps=(store)=>{
+  return{
+    isLoggedin:store.isLoggedin
+  }
+}
+export default connect(mapStateToProps)(App);

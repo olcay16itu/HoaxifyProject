@@ -4,7 +4,7 @@ import {withRouter} from "../shared/withRouter";
 const UserPage = (props) => {
   return (
     <div className="container">
-      <ProfileCard username={props.params.username}></ProfileCard>
+      <ProfileCard currentuser={props.params.username}></ProfileCard>
     </div>
   );
 };

@@ -1,20 +1,18 @@
 import React from 'react';
-import {Authentication} from "../shared/AuthenticationContext";
+import {connect} from "react-redux";
 
 const ProfileCard = (props) => {
+  const {username,currentuser}=props
   return(
-    <Authentication.Consumer>
-      {value => {
-        const currentuser=value.state.username
-        const{username}=props
-        return (
-          <div>
-            {username==currentuser ? currentuser : 'kullanıcı adı farklı'}
-          </div>
-        );
-      }}
-    </Authentication.Consumer>
+    <div>
+      {username==currentuser ? currentuser : 'kullanıcı adı farklı'}
+    </div>
   )
 };
 
-export default ProfileCard;
+const mapStateToProps=(store)=>{
+  return{
+    username:store.username
+  }
+}
+export default connect(mapStateToProps)(ProfileCard);
