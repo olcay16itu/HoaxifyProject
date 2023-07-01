@@ -1,86 +1,69 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Input from '../components/Input'
 import {withTranslation} from "react-i18next";
 import {ChangeLanguage} from "../api/apiCalls";
-import {login} from "../api/apiCalls";
 import ButtonWithProgress from "../components/ButtonWithProgress";
 import {withApiProgress} from "../shared/ApiProgress";
 import {Navigate} from "react-router-dom";
-import {Authentication} from "../shared/AuthenticationContext";
+import {connect} from "react-redux";
+import {loginHandler} from "../redux/authActions";
 
-class UserLoginPage extends React.Component {
-  static contextType=Authentication;
-  state = {
-    username: null,
-    password: null,
-    error: null,
-    redirect:false
-  }
+const UserLoginPage = (props)=> {
+  const[username,setUsername]=useState();
+  const[password,setPassword]=useState();
+  const[error,setError]=useState();
 
-  onClickLogin = async event => {
+  useEffect(()=>{
+    setError(undefined)
+  },[username,password])
+  const onClickLogin = async event => {
     event.preventDefault();
-    const {username, password} = this.state
-    const{onLoginSuccess}=this.context
     const creds = {
       username: username,
       password: password
     }
-    this.setState({error: null})
+    const{dispatch}=props
+    setError(undefined)
     try {
-      const response = await login(creds)
-      const authState={
-        username:response.data.username,
-        password:password,
-        displayName:response.data.displayName,
-        image:response.data.image
-      }
-
-      onLoginSuccess(authState)
+      await dispatch(loginHandler(creds))
     } catch (error) {
-      this.setState({error: error.response.data.message})
+      setError(error.response.data.message)
     }
 
   }
 
-  onChangeEvent = event => {
-    const {name, value} = event.target;
-    const errors = {...this.state.errors}
-    errors[name] = undefined
-    this.setState({[name]: value, errors})
-    this.setState({error: null})
-  }
-  onChangeLanguage = language => {
-    const {i18n} = this.props;
-    i18n.changeLanguage(language)
-    ChangeLanguage(language)
-  }
-
-  render() {
-    const {t,wait} = this.props;
-    const {error, username, password} = this.state
-    const {isLoggedin}=this.context
+    const {t,wait,isLoggedin} = props;
     return (
       <div className="container">
         <form>
           {isLoggedin && <Navigate to={"/"}/>}
           <h1 className="text-center"> {t('Login')}</h1>
-          <Input label={t("Username")} name="username" onChange={this.onChangeEvent}></Input>
-          <Input label={t("Password")} name="password" onChange={this.onChangeEvent}
+          <Input label={t("Username")}  onChange={(event)=>{
+            setUsername(event.target.value)
+          }}></Input>
+          <Input label={t("Password")}  onChange={(event)=>{
+            setPassword(event.target.value)}}
                  type="password"></Input>
-          {this.state.error && <div className={error ? "alert alert-danger" : ''} role="alert">
-            {error} </div>}
+           { <div className={error ? "alert alert-danger" : ''} role="alert">
+             {error} </div>}
           <div className="text-center">
-            <ButtonWithProgress disabled={wait || !username || !password} onClick={this.onClickLogin}
+            <ButtonWithProgress disabled={wait || !username || !password} onClick={onClickLogin}
                                 text={t("Login")} wait={wait}>
             </ButtonWithProgress>
           </div>
         </form>
       </div>
     )
-  }
 }
+
+const mapStateToProps=(store)=>{
+  return{
+    isLoggedin: store.isLoggedin
+    }
+}
+
 //Potansiyel bütün propsları diğer high order compenantlara paslamamız lazım yoksa sırası önemli patlayabilir.
 const UserLoginPageWithApiProgress = withApiProgress(UserLoginPage,"api/1.0/auth")
 const UserLoginPageWithTranslation = withTranslation()(UserLoginPageWithApiProgress)
-
-export default UserLoginPageWithTranslation;
+const UserLoginPageWithConnect = connect(mapStateToProps)(UserLoginPageWithTranslation)
+export default UserLoginPageWithConnect;

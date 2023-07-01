@@ -49,14 +49,14 @@ export function withApiProgress(WrappedComponent,apiPath){
     }
 
     render() {
-      const {wait} = this.state;
+      const wait = this.state.wait || this.props.wait;
       /*return (
         <div>
           {React.cloneElement(this.props.children, {wait:wait})}
         </div>
       );*/
       //Şuan paslamaya gerek yok ancak translation sonra gerçekleşseydi onun propslarını paslamamız gerekirdi.
-      return <WrappedComponent wait={wait} {...this.props}/>
+      return <WrappedComponent {...this.props} wait={wait} />
     }
   }
 
