@@ -1,22 +1,15 @@
 import React, { useState} from "react";
 import Input from '../components/Input'
-import {withTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import ButtonWithProgress from "../components/ButtonWithProgress";
-import {withApiProgress} from "../shared/ApiProgress";
+import {useApiProgress} from "../shared/ApiProgress";
 import {signUpHandler} from "../redux/authActions";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Navigate} from "react-router-dom";
 
 
 const UserSignupPage = (props) => {
 
-  //state = {
-  //  username: null,
-  //  displayname: null,
-  //  password: null,
-  //  passwordRepeat: null,
-  //  errors: {}
-  //};
   const [form, setForm] = useState({
     username: null,
     displayname: null,
@@ -24,7 +17,7 @@ const UserSignupPage = (props) => {
     passwordRepeat: null,
   });
   const [errors, setErrors] = useState({});
-
+  const dispatch=useDispatch()
   const onChangeEvent = event => {
     const {name, value} = event.target;
     setErrors((previousErrors) => ({...previousErrors, [name]: undefined}));
@@ -32,7 +25,6 @@ const UserSignupPage = (props) => {
   }
   const onClickSignUp = async (event) => {
     event.preventDefault()
-    const {dispatch} = props
     const {username, displayname, password} = form
     const body = {
       username: username,
@@ -50,10 +42,16 @@ const UserSignupPage = (props) => {
     }
 
   }
-
+  const {isLoggedin}=useSelector((store)=>{
+    return{
+      isLoggedin: store.isLoggedin
+    }
+  })
   const {username: usernameError, displayname: displaynameError, password: passwordError} = errors;
-  const {t, wait, isLoggedin} = props;
-
+  const  waitforLogin = useApiProgress("api/1.0/auth");
+  const  waitforSignup=useApiProgress("api/1.0/users")
+  const wait = waitforSignup || waitforLogin
+  const {t}=useTranslation()
   let passwordRepeatError;
   if (form.password !== form.passwordRepeat) {
     passwordRepeatError = t('Password mismatch');
@@ -79,14 +77,4 @@ const UserSignupPage = (props) => {
     )
   }
 
-
-
-const mapStateToProps = (store) => {
-  return {
-    isLoggedin: store.isLoggedin
-  }
-}
-const UserSignUpPageWithTranslation = withTranslation()(UserSignupPage)
-const UserSignUpPageWithApiProgressForSignUpRequest = withApiProgress(UserSignUpPageWithTranslation, "api/1.0/users")
-const UserSignUpPageWithTranslationForLoginRequest = withApiProgress(UserSignUpPageWithApiProgressForSignUpRequest, "api/1.0/auth")
-export default connect(mapStateToProps)(UserSignUpPageWithTranslationForLoginRequest);
+export default UserSignupPage;

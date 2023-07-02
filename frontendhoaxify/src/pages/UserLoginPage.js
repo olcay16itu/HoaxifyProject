@@ -1,18 +1,17 @@
 import React, {useEffect, useState} from "react";
 import Input from '../components/Input'
-import {withTranslation} from "react-i18next";
-import {ChangeLanguage} from "../api/apiCalls";
+import {useTranslation} from "react-i18next";
 import ButtonWithProgress from "../components/ButtonWithProgress";
-import {withApiProgress} from "../shared/ApiProgress";
+import {useApiProgress} from "../shared/ApiProgress";
 import {Navigate} from "react-router-dom";
-import {connect} from "react-redux";
+import {useDispatch,useSelector} from "react-redux";
 import {loginHandler} from "../redux/authActions";
 
 const UserLoginPage = (props)=> {
   const[username,setUsername]=useState();
   const[password,setPassword]=useState();
   const[error,setError]=useState();
-
+  const dispatch=useDispatch()
   useEffect(()=>{
     setError(undefined)
   },[username,password])
@@ -22,7 +21,7 @@ const UserLoginPage = (props)=> {
       username: username,
       password: password
     }
-    const{dispatch}=props
+
     setError(undefined)
     try {
       await dispatch(loginHandler(creds))
@@ -31,8 +30,14 @@ const UserLoginPage = (props)=> {
     }
 
   }
+    const {isLoggedin}=useSelector((store)=>{
+      return{
+        isLoggedin: store.isLoggedin
+      }
+    })
 
-    const {t,wait,isLoggedin} = props;
+    const wait = useApiProgress("api/1.0/auth");
+    const{t}=useTranslation()
     return (
       <div className="container">
         <form>
@@ -56,14 +61,5 @@ const UserLoginPage = (props)=> {
     )
 }
 
-const mapStateToProps=(store)=>{
-  return{
-    isLoggedin: store.isLoggedin
-    }
-}
 
-//Potansiyel bütün propsları diğer high order compenantlara paslamamız lazım yoksa sırası önemli patlayabilir.
-const UserLoginPageWithApiProgress = withApiProgress(UserLoginPage,"api/1.0/auth")
-const UserLoginPageWithTranslation = withTranslation()(UserLoginPageWithApiProgress)
-const UserLoginPageWithConnect = connect(mapStateToProps)(UserLoginPageWithTranslation)
-export default UserLoginPageWithConnect;
+export default UserLoginPage;
