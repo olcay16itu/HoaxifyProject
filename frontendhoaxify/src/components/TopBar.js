@@ -1,8 +1,8 @@
 import React from 'react';
 import logo from '../assets/hoaxify.png'
 import {Link} from "react-router-dom";
-import {withTranslation} from "react-i18next";
-import {connect} from "react-redux";
+import {useTranslation} from "react-i18next";
+import {useDispatch,useSelector} from "react-redux";
 import {LogoutSuccess} from "../redux/authActions";
 
 const TopBar =(props)=> {
@@ -13,7 +13,17 @@ const TopBar =(props)=> {
   //onClickLogout=()=>{
   //  this.props.dispatch(LogoutSuccess())
   //}
-    const {t,isLoggedin,username,onLogoutSuccess} = props
+    const {t} = useTranslation()
+    const dispatch=useDispatch()
+    const{username,isLoggedin}=useSelector( (store)=>{
+      return{
+      isLoggedin:store.isLoggedin,
+      username:store.username
+    };
+    })
+    const onLogoutSuccess=()=>{
+      dispatch(LogoutSuccess())
+    }
     let links = <ul className="navbar-nav ms-auto">
       <li><Link className="nav-link" to="/login">{t("Login")}</Link></li>
       <li><Link className="nav-link" to="/signup">{t("Sign Up")}</Link></li>
@@ -37,18 +47,4 @@ const TopBar =(props)=> {
     );
 }
 
-const TranslatedtopBar = withTranslation()(TopBar);
-const MapStateToProps=(store)=>{
-  return{
-    isLoggedin:store.isLoggedin,
-    username:store.username
-  }
-}
-const MapDispatchToProps=(dispatch)=>{
-  return{
-    onLogoutSuccess:()=>{
-      return dispatch(LogoutSuccess())
-    }
-  }
-}
-export default connect(MapStateToProps,MapDispatchToProps)(TranslatedtopBar);
+export default TopBar;

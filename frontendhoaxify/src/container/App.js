@@ -1,20 +1,21 @@
 import React from "react";
-import ApiProgress from "../shared/ApiProgress";
 import UserSignupPage from "../pages/UserSignupPage";
 import LanguageSelector from "../components/LanguageSelector";
 import UserLoginPage from "../pages/UserLoginPage";
 import HomePage from "../pages/HomePage";
 import {HashRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import TopBar from "../components/TopBar";
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 import userPage from "../pages/UserPage";
 
 
-class App extends React.Component {
+const App = ()=> {
   //static contextType=Authentication
-  render() {
-    //const{username,isLoggedin} = this.state
-    const{isLoggedin}=this.props
+  const {isLoggedin}=useSelector((store)=>{
+  return{
+    isLoggedin: store.isLoggedin
+  }
+})
     return (
       <div>
         <Router>
@@ -31,12 +32,6 @@ class App extends React.Component {
         <LanguageSelector/>
       </div>
     );
-  }
 }
 
-const mapStateToProps=(store)=>{
-  return{
-    isLoggedin:store.isLoggedin
-  }
-}
-export default connect(mapStateToProps)(App);
+export default App;
