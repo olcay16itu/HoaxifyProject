@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import axios from "axios";
 
 
@@ -9,7 +9,7 @@ export const useApiProgress=(apiPath)=>{
     let requestinterceptor
     let responseinterceptor
     const updateApiCallFor=(url,inProgress)=>{
-      if(url===apiPath){
+      if(url.includes(apiPath)){
         setWait(inProgress)
       }
     }
@@ -19,7 +19,7 @@ export const useApiProgress=(apiPath)=>{
           return request;
       })
       responseinterceptor=axios.interceptors.response.use((response) => {
-         updateApiCallFor(response.url,false)
+          updateApiCallFor(response.config.url,false)
           return response;
       }, (error) => {
           updateApiCallFor(error.config.url,false)
@@ -31,57 +31,12 @@ export const useApiProgress=(apiPath)=>{
       axios.interceptors.response.eject(responseinterceptor);
     }
 
-    registerInterceptors()
 
+    registerInterceptors()
     return function unmount(){
       unregisterInterceptors()
     }
-  },)
+  })
   return wait;
 }
-function getDisplayName(WrappedComponent){
-  return WrappedComponent.displayName||WrappedComponent.name||'Component';
-}
 
-export function withApiProgress(WrappedComponent,apiPath){
-  return class ApiProgress extends Component {
-    static displayName='ApiProgress('+getDisplayName(WrappedComponent)+')'
-
-    state={
-      wait:false
-    }
-    checkPath(url){
-      if(url===apiPath) {
-        return true;
-      }
-      else{
-        return false;
-      }
-    }
-    componentDidMount() {
-      this.registerInterceptors()
-    }
-    componentWillUnmount() {
-      this.unregisterInterceptors()
-    }
-
-
-
-    //Memory Leak oluşturucak bir durum bu nedenle lfc component will unmount önemli.3 adet lfc durumu var.
-    // Component mounting,updating ve unmounting.
-
-
-
-    render() {
-      const wait = this.state.wait || this.props.wait;
-      /*return (
-        <div>
-          {React.cloneElement(this.props.children, {wait:wait})}
-        </div>
-      );*/
-      //Şuan paslamaya gerek yok ancak translation sonra gerçekleşseydi onun propslarını paslamamız gerekirdi.
-      return <WrappedComponent {...this.props} wait={wait} />
-    }
-  }
-
-}

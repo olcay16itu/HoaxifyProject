@@ -11,7 +11,12 @@ i18n.use(initReactI18next).init({
         'Display Name':'Display Name',
         'Password':'Password',
         'Password Repeat':'Password Repeat',
-        'Login':'Login'
+        'Login':'Login',
+        'Users':'Users',
+        'next':'Next>',
+        'prev':'<Prev',
+        'Load Failure':'Load Failure',
+        'User not Found':'User not Found'
       }
     },
     tr:{
@@ -22,7 +27,12 @@ i18n.use(initReactI18next).init({
         'Password':'Şifre',
         'Display Name':'Profil İsmi',
         'Password Repeat':'Şifre tekrarı',
-        'Login':'Giriş Yap'
+        'Login':'Giriş Yap',
+        'Users':'Kullanıcılar',
+        'next':'İleri>',
+        'prev':'<Geri',
+        'Load Failure':'Yükleme Başarısız',
+        'User not Found':'Kullanıcı Bulunamadı'
       }
     }
   },
