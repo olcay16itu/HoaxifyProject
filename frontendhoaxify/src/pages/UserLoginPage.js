@@ -21,7 +21,6 @@ const UserLoginPage = (props)=> {
       username: username,
       password: password
     }
-
     setError(undefined)
     try {
       await dispatch(loginHandler(creds))
