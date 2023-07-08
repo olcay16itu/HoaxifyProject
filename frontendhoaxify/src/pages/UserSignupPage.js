@@ -48,8 +48,8 @@ const UserSignupPage = (props) => {
     }
   })
   const {username: usernameError, displayname: displaynameError, password: passwordError} = errors;
-  const  waitforLogin = useApiProgress("api/1.0/auth");
-  const  waitforSignup=useApiProgress("api/1.0/users")
+  const  waitforLogin = useApiProgress('post',"api/1.0/auth");
+  const  waitforSignup=useApiProgress('post',"api/1.0/users")
   const wait = waitforSignup || waitforLogin
   const {t}=useTranslation()
   let passwordRepeatError;

@@ -1,12 +1,18 @@
 import React from "react";
 
 const Input = (props) => {
-  const {label, name, onChange, error, type} = props
-  const className = error ? ("form-control is-invalid") : ("form-control")
+  const {label, name, onChange, error, type,defaultValue} = props
+  let className= 'form-control'
+  if(type==='file'){
+    className+='file';
+  }
+  if(error!==undefined){
+    className+=' is-invalid'
+  }
   return (
     <div className="mb-3">
       <label>{label}</label>
-      <input className={className} name={name} onChange={onChange} type={type}></input>
+      <input className={className} name={name} onChange={onChange} type={type} defaultValue={defaultValue}></input>
       <div className="invalid-feedback">
         {error}
       </div>
