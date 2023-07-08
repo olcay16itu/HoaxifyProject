@@ -35,7 +35,7 @@ const UserLoginPage = (props)=> {
       }
     })
 
-    const wait = useApiProgress("api/1.0/auth");
+    const wait = useApiProgress('post',"api/1.0/auth");
     const{t}=useTranslation()
     return (
       <div className="container">

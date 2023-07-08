@@ -1,6 +1,6 @@
 package com.hoaxify.webservice.Service;
 
-import com.hoaxify.webservice.DTO.UserDTO;
+import com.hoaxify.webservice.DTO.UserUpdateDTO;
 import com.hoaxify.webservice.Repositories.UserRepository;
 import com.hoaxify.webservice.entity.User;
 import com.hoaxify.webservice.error.NotFoundException;
@@ -11,14 +11,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.function.Function;
+import java.io.*;
 
 @Service
 public class UserService {
     @Autowired
     UserRepository userRepository;
     PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+
+    FileService fileService;
+    public UserService(FileService fileService){
+        this.fileService=fileService;
+    }
     public void addUser(User user){
         String encryptedpass= passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedpass);
@@ -41,4 +45,21 @@ public class UserService {
             return user;
         }
     }
+    public User updateUser(String username,UserUpdateDTO userUpdateDTO){
+        User user= userRepository.findByusername(username);
+        user.setDisplayname(userUpdateDTO.getDisplayname());
+        if(userUpdateDTO.getImage()!=null){
+            String oldimage = user.getImage();
+            try {
+                String storedFileName = fileService.writeBase64EncodedStringToFile(userUpdateDTO.getImage());
+                user.setImage(storedFileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            fileService.deleteimage(oldimage);
+        }
+        return userRepository.save(user);
+    }
+
+
 }

@@ -22,7 +22,6 @@ public class User implements UserDetails {
     @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
     @Size(min = 4,max = 255)
     @UniqueUsername
-
     private String username;
     @NotNull(message = "{hoaxify.constraints.displayname.NotNull.message}")
     @Size(min = 4,max = 255)
@@ -33,7 +32,8 @@ public class User implements UserDetails {
     //içerisinde en az 1 adet büyük 1 adet küçük ve 1 adet sayı
     @Pattern(regexp="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$",message = "{hoaxify.constraints.password.Pattern.message}")
     private String password;
-
+   // @Lob
+   //@Column(length=100000)
     private String image;
 
     @Override
